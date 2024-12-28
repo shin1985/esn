@@ -19,37 +19,26 @@
 3. **リザーバ状態更新**  
    - 以下の更新式に基づき、1ステップごとにリザーバ状態を更新します。
 
-   $$
-   \mathbf{x}(t+1) 
-   = (1 - \alpha)\,\mathbf{x}(t)
-   \;+\;
-   \alpha\,
-   \tanh\!\bigl(\mathbf{W}_{\text{in}}\mathbf{u}(t)
-   \;+\;\mathbf{W}\,\mathbf{x}(t)\bigr).
+   <img src="https://latex.codecogs.com/svg.image?\mathbf{x}(t&plus;1)=(1-\alpha)\,\mathbf{x}(t)\;&plus;\;\alpha\,\tanh\!\bigl(\mathbf{W}_{\text{in}}\mathbf{u}(t)\;&plus;\;\mathbf{W}\,\mathbf{x}(t)\bigr)." />
 
 4. **出力計算**  
-   - 更新したリザーバ状態 \(\mathbf{x}(t)\) に対し、
+   - 更新したリザーバ状態 <img src="https://latex.codecogs.com/svg.image?\(\mathbf{x}(t)\)" /> に対し、
 
-   \mathbf{y}(t) 
-   = \mathbf{W}_{\text{out}}\;\mathbf{x}(t).
+   <img src="https://latex.codecogs.com/svg.image?\mathbf{y}(t)=\mathbf{W}_{\text{out}}\;\mathbf{x}(t)." />
 
    で出力を求めます。
 
 5. **学習 (リッジ回帰)**  
-   - 出力重み \(\mathbf{W}_{\text{out}}\) はリザーバの状態と教師データからのみ学習します。  
+   - 出力重み <img src="https://latex.codecogs.com/svg.image?\(\mathbf{W}_{\text{out}}\)" /> はリザーバの状態と教師データからのみ学習します。  
    - 以下のリッジ回帰を用いて更新します。
 
-   \mathbf{W}_{\text{out}}
-   =
-   \mathbf{D}\,\mathbf{X}^\top
-   \bigl(\mathbf{X}\,\mathbf{X}^\top + \lambda\,\mathbf{I}\bigr)^{-1}.
-   $$
+   <img src="https://latex.codecogs.com/svg.image?\mathbf{W}_{\text{out}}=\mathbf{D}\,\mathbf{X}^\top\bigl(\mathbf{X}\,\mathbf{X}^\top&plus;\lambda\,\mathbf{I}\bigr)^{-1}." />
 
-   - \(\mathbf{X}\) は各時刻でのリザーバ状態の履歴。  
-   - \(\mathbf{D}\) は教師出力の履歴。
+   - <img src="https://latex.codecogs.com/svg.image?\(\mathbf{X}\)" /> は各時刻でのリザーバ状態の履歴。  
+   - <img src="https://latex.codecogs.com/svg.image?\(\mathbf{D}\)" /> は教師出力の履歴。
 
 6. **テスト(予測)**  
-   - 学習で固定した \(\mathbf{W}_{\text{out}}\) を使い、任意のテスト入力に対して1ステップごとに予測を行います。
+   - 学習で固定した <img src="https://latex.codecogs.com/svg.image?\(\mathbf{W}_{\text{out}}\)" /> を使い、任意のテスト入力に対して1ステップごとに予測を行います。
 
 ## 実行方法
 
