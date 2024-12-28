@@ -18,27 +18,39 @@
 
 3. **リザーバ状態更新**  
    - 以下の更新式に基づき、1ステップごとにリザーバ状態を更新します。
+
    $$
-     \[
-       \mathbf{x}(t+1) = (1 - \alpha)\,\mathbf{x}(t) + \alpha\,\tanh\bigl(\mathbf{W}_{\text{in}}\mathbf{u}(t) + \mathbf{W}\mathbf{x}(t)\bigr).
-     \]
+   \mathbf{x}(t+1) 
+   = (1 - \alpha)\,\mathbf{x}(t)
+   \;+\;
+   \alpha\,
+   \tanh\!\bigl(\mathbf{W}_{\text{in}}\mathbf{u}(t)
+   \;+\;\mathbf{W}\,\mathbf{x}(t)\bigr).
    $$
 
 4. **出力計算**  
    - 更新したリザーバ状態 \(\mathbf{x}(t)\) に対し、
-     \[
-       \mathbf{y}(t) = \mathbf{W}_{\text{out}}\mathbf{x}(t)
-     \]
-     で出力を求めます。
+
+   $$
+   \mathbf{y}(t) 
+   = \mathbf{W}_{\text{out}}\;\mathbf{x}(t).
+   $$
+
+   で出力を求めます。
 
 5. **学習 (リッジ回帰)**  
    - 出力重み \(\mathbf{W}_{\text{out}}\) はリザーバの状態と教師データからのみ学習します。  
-   - 以下のリッジ回帰を用いて更新します。  
-     \[
-       \mathbf{W}_{\text{out}} = \mathbf{D}\,\mathbf{X}^\top\,(\mathbf{X}\,\mathbf{X}^\top + \lambda \mathbf{I})^{-1}.
-     \]
-     - \(\mathbf{X}\) は各時刻でのリザーバ状態の履歴。  
-     - \(\mathbf{D}\) は教師出力の履歴。
+   - 以下のリッジ回帰を用いて更新します。
+
+   $$
+   \mathbf{W}_{\text{out}}
+   =
+   \mathbf{D}\,\mathbf{X}^\top
+   \bigl(\mathbf{X}\,\mathbf{X}^\top + \lambda\,\mathbf{I}\bigr)^{-1}.
+   $$
+
+   - \(\mathbf{X}\) は各時刻でのリザーバ状態の履歴。  
+   - \(\mathbf{D}\) は教師出力の履歴。
 
 6. **テスト(予測)**  
    - 学習で固定した \(\mathbf{W}_{\text{out}}\) を使い、任意のテスト入力に対して1ステップごとに予測を行います。
