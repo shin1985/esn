@@ -5,16 +5,16 @@
 
 /* ----- パラメータ設定 ----- */
 #define N_INPUT      1     // 入力次元
-#define N_RESERVOIR  10    // リザーバ(隠れ状態)の次元
+#define N_RESERVOIR  10    // リザバー(隠れ状態)の次元
 #define N_OUTPUT     1     // 出力次元
 
 #define TRAIN_LEN    100   // 学習サンプル数
 #define TEST_LEN     50    // テストサンプル数
 
 #define ALPHA        0.3   // リーク率 (leaking rate)
-#define RHO_INIT     0.9   // リザーバ重みのランダムスケール(簡易的に使用)
+#define RHO_INIT     0.9   // リザバー重みのランダムスケール(簡易的に使用)
 
-#define RIDGE_PARAM  1e-2  // リッジ回帰の正則化係数(簡易)
+#define RIDGE_PARAM  1e-2  // Ridge回帰の正則化係数(簡易)
 
 /* 
  * 簡易乱数生成:  -1.0 ~ +1.0 の範囲の値を返す 
@@ -36,14 +36,14 @@ static inline double activation(double x) {
  */
 typedef struct {
     double W_in[N_RESERVOIR][N_INPUT];     // 入力重み
-    double W[N_RESERVOIR][N_RESERVOIR];    // リザーバ内部重み
+    double W[N_RESERVOIR][N_RESERVOIR];    // リザバー内部重み
     double W_out[N_OUTPUT][N_RESERVOIR];   // 出力重み (学習で求める)
 
-    double x[N_RESERVOIR]; // リザーバの状態ベクトル
+    double x[N_RESERVOIR]; // リザバーの状態ベクトル
 } ESN;
 
 /* 
- * リザーバ状態 x(t+1) = (1 - alpha)* x(t) + alpha * tanh( W_in*u(t) + W*x(t) )
+ * リザバー状態 x(t+1) = (1 - alpha)* x(t) + alpha * tanh( W_in*u(t) + W*x(t) )
  * (最もシンプルな形式として、出力からのフィードバックは省略)
  */
 void esn_update_state(ESN *esn, const double *u) {
@@ -56,7 +56,7 @@ void esn_update_state(ESN *esn, const double *u) {
         for(int j = 0; j < N_INPUT; j++) {
             sum += esn->W_in[i][j] * u[j];
         }
-        // リザーバ内部の寄与
+        // リザバー内部の寄与
         for(int j = 0; j < N_RESERVOIR; j++) {
             sum += esn->W[i][j] * esn->x[j];
         }
@@ -84,7 +84,7 @@ void esn_calculate_output(ESN *esn, double *y) {
 }
 
 /* 
- * リザーバ重みと入力重みをランダム初期化 
+ * リザバー重みと入力重みをランダム初期化 
  * (スペクトル半径調整など簡単に済ませる)
  */
 void esn_init(ESN *esn) {
@@ -95,7 +95,7 @@ void esn_init(ESN *esn) {
         }
     }
 
-    // リザーバ内部重みをランダム初期化
+    // リザバー内部重みをランダム初期化
     for(int i = 0; i < N_RESERVOIR; i++) {
         for(int j = 0; j < N_RESERVOIR; j++) {
             // 簡易的にスケールを小さめに
@@ -110,15 +110,15 @@ void esn_init(ESN *esn) {
         }
     }
 
-    // リザーバ状態を 0 クリア
+    // リザバー状態を 0 クリア
     for(int i = 0; i < N_RESERVOIR; i++) {
         esn->x[i] = 0.0;
     }
 }
 
 /* 
- * リッジ回帰による W_out の学習
- * X: N_RESERVOIR x TRAIN_LEN のリザーバ状態履歴 (縦N_RESERVOIR, 横TRAIN_LEN)
+ * Ridge回帰による W_out の学習
+ * X: N_RESERVOIR x TRAIN_LEN のリザバー状態履歴 (縦N_RESERVOIR, 横TRAIN_LEN)
  * D: N_OUTPUT x TRAIN_LEN の教師出力データ
  * W_out を N_OUTPUT x N_RESERVOIR で更新 
  *
@@ -233,11 +233,11 @@ int main(void) {
 
     /* 
      * 学習フェーズ:
-     * 各時刻のリザーバ状態 x(t) を貯めておき、後で W_out を学習 
+     * 各時刻のリザバー状態 x(t) を貯めておき、後で W_out を学習 
      */
 
-    // リザーバ状態を保存する X
-    // X[i][t] : i番目のリザーバニューロン, t番目の時系列サンプル
+    // リザバー状態を保存する X
+    // X[i][t] : i番目のリザバーニューロン, t番目の時系列サンプル
     double **X = (double**)malloc(sizeof(double*) * N_RESERVOIR);
     for(int i=0;i<N_RESERVOIR;i++){
         X[i] = (double*)malloc(sizeof(double) * TRAIN_LEN);
@@ -265,7 +265,7 @@ int main(void) {
         }
     }
 
-    // リザーバ状態 X, 教師出力 D から W_out をリッジ回帰で学習
+    // リザバー状態 X, 教師出力 D から W_out をリッジ回帰で学習
     train_ridge_regression(&esn, X, D, TRAIN_LEN);
 
     /* メモリ解放(計算後) */
@@ -279,7 +279,7 @@ int main(void) {
     free(D);
 
     /* ----- テストフェーズ(予測) ----- */
-    // 学習時のリザーバ状態をリセット (ここでは単純に0に戻すなど)
+    // 学習時のリザバー状態をリセット (ここでは単純に0に戻すなど)
     for(int i=0; i<N_RESERVOIR; i++){
         esn.x[i] = 0.0;
     }
