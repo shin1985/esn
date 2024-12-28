@@ -1,0 +1,2 @@
+# esn
+シンプルなEchoStateNetworkのサンプルコード
