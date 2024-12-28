@@ -8,33 +8,33 @@
 ## コードの特徴
 
 1. **パラメータ設定**  
-   - 入力次元 `N_INPUT`、リザーバの次元 `N_RESERVOIR`、出力次元 `N_OUTPUT` といった基本パラメータを定義します。  
+   - 入力次元 `N_INPUT`、リザバーの次元 `N_RESERVOIR`、出力次元 `N_OUTPUT` といった基本パラメータを定義します。  
    - リーク率 `ALPHA` などのハイパーパラメータもここで定義しています。
 
 2. **初期化**  
-   - リザーバの重み行列 `W` と入力重み行列 `W_in` をランダムに生成します。  
+   - リザバーの重み行列 `W` と入力重み行列 `W_in` をランダムに生成します。  
    - 出力重み行列 `W_out` は学習前はゼロ初期化します。  
-   - リザーバ状態ベクトル `x` もゼロで初期化します。
+   - リザバー状態ベクトル `x` もゼロで初期化します。
 
-3. **リザーバ状態更新**  
-   - 以下の更新式に基づき、1ステップごとにリザーバ状態を更新します。
+3. **リザバー状態更新**  
+   - 以下の更新式に基づき、1ステップごとにリザバー状態を更新します。
 
    <img src="https://latex.codecogs.com/svg.image?\mathbf{x}(t&plus;1)=(1-\alpha)\,\mathbf{x}(t)\;&plus;\;\alpha\,\tanh\!\bigl(\mathbf{W}_{\text{in}}\mathbf{u}(t)\;&plus;\;\mathbf{W}\,\mathbf{x}(t)\bigr)." />
 
 4. **出力計算**  
-   - 更新したリザーバ状態 <img src="https://latex.codecogs.com/svg.image?\(\mathbf{x}(t)\)" /> に対し、
+   - 更新したリザバー状態 <img src="https://latex.codecogs.com/svg.image?\(\mathbf{x}(t)\)" /> に対し、
 
    <img src="https://latex.codecogs.com/svg.image?\mathbf{y}(t)=\mathbf{W}_{\text{out}}\;\mathbf{x}(t)." />
 
    で出力を求めます。
 
-5. **学習 (リッジ回帰)**  
-   - 出力重み <img src="https://latex.codecogs.com/svg.image?\(\mathbf{W}_{\text{out}}\)" /> はリザーバの状態と教師データからのみ学習します。  
-   - 以下のリッジ回帰を用いて更新します。
+5. **学習 (Ridge回帰)**  
+   - 出力重み <img src="https://latex.codecogs.com/svg.image?\(\mathbf{W}_{\text{out}}\)" /> はリザバーの状態と教師データからのみ学習します。  
+   - 以下のRidge回帰を用いて更新します。
 
    <img src="https://latex.codecogs.com/svg.image?\mathbf{W}_{\text{out}}=\mathbf{D}\,\mathbf{X}^\top\bigl(\mathbf{X}\,\mathbf{X}^\top&plus;\lambda\,\mathbf{I}\bigr)^{-1}." />
 
-   - <img src="https://latex.codecogs.com/svg.image?\(\mathbf{X}\)" /> は各時刻でのリザーバ状態の履歴。  
+   - <img src="https://latex.codecogs.com/svg.image?\(\mathbf{X}\)" /> は各時刻でのリザバー状態の履歴。  
    - <img src="https://latex.codecogs.com/svg.image?\(\mathbf{D}\)" /> は教師出力の履歴。
 
 6. **テスト(予測)**  
@@ -52,7 +52,7 @@
 - **行列演算**はすべてループベースで直接行っており、大きなネットワークには向きません。  
   実際にはBLASやEigenなどのライブラリを使うことが推奨されます。  
 - **スペクトル半径**の厳密な計算は省略し、`RHO_INIT` で一律にスケールしています。本来は最大固有値を計算してスケーリングする必要があります。  
-- **ウォーミングアップ(初期区間の破棄)** は行っていないため、リザーバが十分に励起されていない初期段階の状態も学習に使われます。  
+- **ウォーミングアップ(初期区間の破棄)** は行っていないため、リザバーが十分に励起されていない初期段階の状態も学習に使われます。  
 - **ハイパーパラメータ** (リーク率、正則化係数など) は適宜調整する必要があります。  
 - 学習データやテストデータは仮置きの `sin` や `cos` で生成しているため、実際には各種時系列タスク用のデータを用意してください。
 
